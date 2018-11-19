@@ -1,3 +1,13 @@
+/**
+ * Problem statement : Implement the expected O(n) algorithm for the k largest elements (select)
+ *    of an array, and compare its performance with the algorithm using
+ *    priority queues that we designed for the same problem on streams.
+ *    Use k=n/2 (median), and try large values of n: 16M, 32M, 64M, 128M, 256M.
+ *
+ * @author Achyut Bhandiwad(aab180004)
+ * @author Saurav Sharma (sxs179830)
+ */
+
 package aab180004;
 
 import java.util.Arrays;
@@ -7,6 +17,11 @@ import java.util.Random;
 
 public class SP11 {
 
+
+    /**
+     * Insertion sort
+     * @param arr
+     */
     public static void insertionSort(int[] arr) {
         insertionSort(arr, 0, arr.length - 1);
     }
@@ -29,12 +44,27 @@ public class SP11 {
         }
     }
 
+    /**
+     * Implementation of select algorithm O(n)
+     * @param arr
+     * @param k
+     * @return value of kth largest element
+     */
     public static int select(int[] arr, int k){
         return select(arr, 0, arr.length, k);
     }
 
+    /**
+     * Implementation of select algorithm O(n)
+     * @param arr
+     * @param p
+     * @param n
+     * @param k
+     * @return value of kth largest element
+     */
     private static int select (int[] arr, int p, int n, int k){
-        if(n < 1 ){
+        //threshold of 17
+        if(n < 17 ){
             insertionSort(arr, p, p+n-1);
             return arr[p + n - k];
         }else{
@@ -50,6 +80,12 @@ public class SP11 {
         }
     }
 
+    /**
+     * Exchange the values at index i with j in the arr A
+     * @param A array
+     * @param i
+     * @param j
+     */
     private static void exchange(int[] A, int i, int j) {
         if(A[i] == A[j]) return;
 
@@ -58,12 +94,21 @@ public class SP11 {
         A[i] = A[i] ^ A[j];
     }
 
+    /**
+     * Select using the priority queue
+     * @param arr
+     * @param k
+     * @return value of kth largest element
+     */
     public static int selectUsingPQ(int[] arr, int k){
         PriorityQueue<Integer> pq = new PriorityQueue<>();
         int i;
+
+        //add first k elements in the priority queue
         for(i=0; i<k ; i++){
             pq.add(arr[i]);
         }
+
         while(i<arr.length){
             if(arr[i] > pq.peek()){
                 pq.add(arr[i]);
@@ -71,6 +116,8 @@ public class SP11 {
             }
             i++;
         }
+
+        // the top of the heap will be the kth largest element
         return pq.peek();
     }
 
@@ -96,17 +143,29 @@ public class SP11 {
     }
 
     public static void main(String[] args){
-        int size = 8000000;
-        //int size = 10;
+        int size = 16000000;
 
+        //create array of random elements
         int[] arr = new int[size];
         Random rand = new Random();
         for(int i=0 ; i< size; i++){
             arr[i] = rand.nextInt();
         }
+
+        Timer timer1 = new Timer();
+        Timer timer2 = new Timer();
+
+        //select using the O(n) algorithm
+        timer1.start();
         System.out.println(select(arr,size/2));
+        timer1.end();
+        System.out.println(timer1);
+
+        //select using the priority queue
+        timer2.start();
         System.out.println(selectUsingPQ(arr,size/2));
-        Arrays.sort(arr);
-        System.out.println(arr[size/2]);
+        timer2.end();
+        System.out.println(timer2);
+
     }
 }
